@@ -1,6 +1,6 @@
 library(foreign)
 
-setwd('D:\\Downloads\\KHP+2024_spss') #한국의료패널데이터: https://www.khp.re.kr:444/web/data/board/dataDownload.do?bbsid=107
+setwd('D:\\Downloads\\KHP+2024_spss')
 F_IND <- read.spss("F_IND.SAV")
 F_MS <- read.spss('F_MS.SAV')
 
@@ -10,12 +10,13 @@ F_MS <- data.frame(F_MS)
 
 panel <- merge(F_IND, F_MS, by = 'PIDWON')
 panel_table <- filter(panel, !is.na(HS_EQ2))
-panel_table_refined <- select(panel_table, PIDWON, SEX,OUMED_DZ1, HS_EQ1 ,HS_EQ2, HS_EQ3, HS_EQ4, HS_EQ5)
+panel_table_refined <- select(panel_table, PIDWON, CD1_DM, MA1, HS_EQ1 ,HS_EQ2, HS_EQ3, HS_EQ4, HS_EQ5)
 
-panel_table_refined_당뇨 <- filter(panel_table_refined, OUMED_DZ1 == 2)
+
+panel_table_refined_당뇨 <- filter(panel_table_refined, CD1_DM == 1, MA1 == 1 | MA1 == 4)
 
 panel_table_refined_당뇨
-colnames(panel_table_refined_당뇨) <- c('PIDWON', 'SEX', 'OUMED_DZ1', 'MO', 'SC', 'UA', 'PD', 'AD')
+colnames(panel_table_refined_당뇨) <- c('PIDWON', 'CD1_DM', 'MA1', 'MO', 'SC', 'UA', 'PD', 'AD')
 
 
 
