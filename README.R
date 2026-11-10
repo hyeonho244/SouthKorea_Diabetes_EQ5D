@@ -1,6 +1,6 @@
 library(foreign)
 
-setwd('D:\\Downloads\\KHP+2024_spss')
+setwd('D:\\Downloads\\KHP+2024_spss') #한국의료패널데이터 2024년도 자료임
 F_IND <- read.spss("F_IND.SAV")
 F_MS <- read.spss('F_MS.SAV')
 
