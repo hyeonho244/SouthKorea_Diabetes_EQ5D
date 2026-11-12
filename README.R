@@ -1,34 +1,25 @@
 library(foreign)
+library(dplyr)
+setwd('D:\\OneDrive\\Desktop\\보건의료경제성평가 팀플')
 
-setwd('D:\\Downloads\\KHP+2024_spss') #한국의료패널데이터 2024년도 자료임
-F_IND <- read.spss("F_IND.SAV")
-F_MS <- read.spss('F_MS.SAV')
-
-F_IND <- data.frame(F_IND)
-F_MS <- data.frame(F_MS)
+HN <- read.spss('HN24_ALL(SPSS)\\HN24_ALL.sav')
+HN <- as.data.frame(HN)
 
 
-panel <- merge(F_IND, F_MS, by = 'PIDWON')
-panel_table <- filter(panel, !is.na(HS_EQ2))
-panel_table_refined <- select(panel_table, PIDWON, CD1_DM, MA1, HS_EQ1 ,HS_EQ2, HS_EQ3, HS_EQ4, HS_EQ5)
+HN <- select(HN, ID, age, HE_DM_HbA1c, DE1_pr, DE1_ag, HE_glu, DE1_31, EQ5D, HE_Uket) #표본: 전체(6997명)
 
+HN_TDM <- filter(HN, DE1_pr == 1, DE1_31 == 1)
 
-panel_table_refined_당뇨 <- filter(panel_table_refined, CD1_DM == 1, MA1 == 1 | MA1 == 4)
-
-panel_table_refined_당뇨
-colnames(panel_table_refined_당뇨) <- c('PIDWON', 'CD1_DM', 'MA1', 'MO', 'SC', 'UA', 'PD', 'AD')
+# 논의: 케톤산증을 가진 표본은 어떻게 찾을 것인가? => 케톤산증 유무 변수 x
+# 케톤산증 진단 기준: https://www.metrohosp.com/sub05/healthguide_contents.php?idx=8700 / 이 중에서 데이터에 있는 변수만 뽑기
+# 임상자료: BUN(혈액요소질소) = 43.86(+- 36.17)
+# 문헌: '단일 기관에서 경험한 당뇨병성 케톤산증의 임상적 고찰'
 
 
 
-library(eq5d)
+HN_TDM_noevent <- filter(HN_TDM, 70 <= HE_glu)
 
-mean(eq5d(panel_table_refined_당뇨, country = 'SouthKorea', version = '3L', type = 'TTO'))
-# type에서 TTO는 시간교환법, VAS는 아날로그법이다.
-# version에서 3L은 각 항목의 범위가 1-3. 5L은 1-5이다.
+HN_TDM_noevent <- filter(HN_TDM_noevent, !is.na(EQ5D))
 
-
-eq5d(scores=c(MO=test_table2$EQ1, SC=test_table2$EQ2, UA=test_table2$EQ3 , PD=test_table2$EQ4, AD=test_table2$EQ5),
-     type='TTO', country = 'SouthKorea', version='3L')
-
-
-
+mean(HN_TDM_noevent$EQ5D)
+mean(HN_TDM_keto$EQ5D)
